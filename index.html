@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamento de Inspeção AR</title>
+
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+
+    <!-- Ferramenta de Debug para Mobile -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
+
+    <script>
+        // O valor base da escala agora é controlado pelo slider
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: sans-serif;
+        }
+
+        /* Top Bar */
+        #top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #top-bar img.logo {
+            height: 40px;
+            margin-left: 20px;
+        }
+
+        .top-bar-btns {
+            margin-right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-top {
+            padding: 8px 15px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: white;
+            font-weight: bold;
+        }
+
+        .btn-top:active {
+            transform: scale(0.95);
+        }
+
+        /* Modal / Popups */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 60px;
+            /* Abaixo da barra superior */
+            left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2500;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-modal {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Camada de UI sobreposta (Agora como Popup/Modal) */
+        #ui-container {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2500;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        #ui-container h2 {
+            color: white;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .btn {
+            width: 90%;
+            max-width: 400px;
+            padding: 15px 10px;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.1s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-verde {
+            background-color: #28a745;
+        }
+
+        .btn-vermelho {
+            background-color: #dc3545;
+        }
+
+        .btn-azul {
+            background-color: #007bff;
+        }
+
+        /* Mensagem de Transição (Fade) */
+        #feedback-msg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1500;
+            display: none;
+            opacity: 0;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Tela Final de Resultados */
+        #tela-resultado {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+            /* Remove rolagem */
+            padding: 10px 0;
+            box-sizing: border-box;
+        }
+
+        #tela-resultado h2 {
+            margin: 5px 0;
+            font-size: 22px;
+        }
+
+        #nota-final {
+            margin: 5px 0 15px 0;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        #resultado-logs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Duas colunas para caber tudo sem rolar */
+            gap: 10px 15px;
+            width: 95%;
+            max-width: 800px;
+        }
+
+        .log-item {
+            font-size: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
+        .correto {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .incorreto {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .motivo {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 3px;
+        }
+
+        /* Zoom Slider */
+        #zoom-container {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            height: 40vh; /* Ocupa 40% da altura da tela */
+            max-height: 250px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 15px 10px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #zoom-container::before {
+            content: '+';
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        #zoom-container::after {
+            content: '-';
+            font-size: 30px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+            line-height: 20px;
+        }
+
+        #zoom-slider {
+            -webkit-appearance: slider-vertical;
+            appearance: slider-vertical;
+            width: 20px;
+            height: 100%;
+            outline: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Barra Superior -->
+    <div id="top-bar">
+        <img src="./pop/logo_gestamp.svg" alt="Gestamp Logo" class="logo">
+        <div id="contador-pecas"
+            style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 20px; font-weight: bold; color: #333;">
+            1/10</div>
+        <div class="top-bar-btns">
+            <button id="btn-avaliar" class="btn-top" style="background-color: #28a745; color: white; display: none;"
+                onclick="abrirModal('ui-container')">Avaliar</button>
+            <button class="btn-top" onclick="abrirModal('modal-sobre')">Sobre</button>
+            <button class="btn-top" onclick="abrirModal('modal-olho')">👁️</button>
+        </div>
+    </div>
+
+    <!-- Modais -->
+    <div id="modal-sobre" class="modal">
+        <img src="./pop/pop1.jpg" alt="Sobre POP 1">
+        <button class="close-modal" onclick="fecharModal('modal-sobre')">Fechar</button>
+    </div>
+    <div id="modal-olho" class="modal">
+        <img src="./pop/pop2.jpg" alt="Olho POP 2">
+        <button class="close-modal" onclick="fecharModal('modal-olho')">Fechar</button>
+    </div>
+
+    <div id="feedback-msg">Registrando...</div>
+    <div id="loading-msg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); z-index: 1800; display: none; justify-content: center; align-items: center; color: white; font-size: 22px; font-weight: bold; flex-direction: column; text-align: center;">
+        <div style="margin-bottom: 15px;">Carregando Peça 3D...</div>
+        <div style="font-size: 14px; color: #ccc;">Isso pode levar alguns segundos pelo Wi-Fi,<br>pois os modelos possuem alta resolução.</div>
+    </div>
+    <div id="ui-container"></div>
+
+    <!-- Controle de Zoom -->
+    <div id="zoom-container">
+        <input type="range" id="zoom-slider" min="0.5" max="10" step="0.2" value="3" orient="vertical">
+    </div>
+
+    <div id="tela-resultado">
+        <h2>Resultado da Inspeção</h2>
+        <h3 id="nota-final"></h3>
+        <div id="resultado-logs"></div>
+        <button class="btn btn-azul"
+            style="margin-top: 30px; margin-bottom: 50px; padding: 15px 30px; font-size: 18px; width: auto;"
+            onclick="reiniciarTeste()">Reiniciar Treinamento</button>
+    </div>
+
+    <a-scene mindar-image="imageTargetSrc: ./alvo_pecas.mind;" color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
+
+        <a-light type="ambient" color="#FFFFFF" intensity="1.5"></a-light>
+        <a-light type="directional" color="#FFFFFF" intensity="2.0" position="1 2 1"></a-light>
+
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <a-entity mindar-image-target="targetIndex: 0" id="alvo-ar">
+            <!-- Usamos apenas uma entidade que terá seu modelo trocado dinamicamente para economizar memória (RAM/VRAM) no celular -->
+            <a-entity id="modelo-peca" rotation="90 0 0" position="0 0 0" scale="2 2 2" visible="false"></a-entity>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        const uiContainer = document.getElementById('ui-container');
+        const feedbackMsg = document.getElementById('feedback-msg');
+        const telaResultado = document.getElementById('tela-resultado');
+        const resultadoLogs = document.getElementById('resultado-logs');
+        const notaFinal = document.getElementById('nota-final');
+        const alvoAR = document.getElementById('alvo-ar');
+
+        // Configuração das peças
+        const pecas = [
+            { id: "p2_a", descricao: "Peça OK, peça conforme" },
+            { id: "p2_b", descricao: "Não conforme, faltando porca A" },
+            { id: "p2_c", descricao: "Não conforme, faltando porca B" },
+            { id: "p2_d", descricao: "Não conforme, faltando chapa" },
+            { id: "p2_e", descricao: "Não conforme, chapa NOK invertida" },
+            { id: "p2_f", descricao: "Não conforme, chapa NOK desalinhada" },
+            { id: "p2_g", descricao: "Não conforme, chapa NOK na posição incorreta" }
+        ];
+
+        let sequenciaTestes = [];
+        let indiceAtual = 0;
+        let historicoRespostas = [];
+        const totalTestes = 10;
+
+        function gerarSequencia() {
+            sequenciaTestes = [];
+            for (let i = 0; i < totalTestes; i++) {
+                const indexAleatorio = Math.floor(Math.random() * pecas.length);
+                sequenciaTestes.push(pecas[indexAleatorio]);
+            }
+        }
+
+        // Modais
+        function abrirModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        function fecharModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // Controle do AR
+        alvoAR.addEventListener("targetFound", () => {
+            if (indiceAtual < totalTestes && telaResultado.style.display !== 'flex') {
+                document.getElementById('btn-avaliar').style.display = 'inline-block';
+            }
+        });
+
+        alvoAR.addEventListener("targetLost", () => {
+            document.getElementById('btn-avaliar').style.display = 'none';
+            fecharModal('ui-container');
+        });
+
+        function renderizarBotoes() {
+            uiContainer.innerHTML = '<h2>Qual é o defeito?</h2>';
+            pecas.forEach(peca => {
+                let btnClass = peca.id === "p2_a" ? "btn-verde" : "btn-vermelho";
+                uiContainer.innerHTML += `<button class="btn ${btnClass}" onclick="processarResposta('${peca.descricao}')">${peca.descricao}</button>`;
+            });
+            uiContainer.innerHTML += `<button class="close-modal" style="margin-top:15px; background: #666; color: white;" onclick="fecharModal('ui-container')">Voltar para a câmera</button>`;
+        }
+
+        function processarResposta(escolhaUsuario) {
+            const pecaCorreta = sequenciaTestes[indiceAtual];
+            const acertou = (escolhaUsuario === pecaCorreta.descricao);
+
+            historicoRespostas.push({
+                etapa: indiceAtual + 1,
+                correta: pecaCorreta.descricao,
+                escolha: escolhaUsuario,
+                acertou: acertou
+            });
+
+            mostrarFeedback(() => {
+                indiceAtual++;
+                if (indiceAtual < totalTestes) {
+                    carregarPeca();
+                } else {
+                    finalizarTeste();
+                }
+            });
+        }
+
+        function mostrarFeedback(callback) {
+            uiContainer.style.display = "none";
+            feedbackMsg.style.display = "flex";
+
+            // Força o reflow para a transição acontecer
+            feedbackMsg.offsetHeight;
+            feedbackMsg.style.opacity = "1";
+
+            setTimeout(() => {
+                callback(); // Troca a peça enquanto a tela está escura
+
+                // Inicia o fade out para clarear novamente
+                feedbackMsg.style.opacity = "0";
+
+                // Esconde a div ao final da transição
+                setTimeout(() => {
+                    feedbackMsg.style.display = "none";
+                }, 300);
+            }, 600); // Tela fica escura por 600ms
+        }
+
+        function limparMemoria3D(entidade) {
+            if (!entidade) return;
+            const obj3D = entidade.getObject3D('mesh');
+            if (obj3D) {
+                obj3D.traverse((node) => {
+                    if (node.isMesh) {
+                        if (node.geometry) node.geometry.dispose();
+                        if (node.material) {
+                            const materiais = Array.isArray(node.material) ? node.material : [node.material];
+                            materiais.forEach(mat => {
+                                ['map', 'lightMap', 'bumpMap', 'normalMap', 'specularMap', 'envMap', 'emissiveMap', 'metalnessMap', 'roughnessMap'].forEach(mapType => {
+                                    if (mat[mapType]) mat[mapType].dispose();
+                                });
+                                mat.dispose();
+                            });
+                        }
+                    }
+                });
+            }
+            entidade.removeAttribute('gltf-model');
+            if (entidade.parentNode) {
+                entidade.parentNode.removeChild(entidade);
+            }
+        }
+
+        function carregarPeca() {
+            const pecaDaVez = sequenciaTestes[indiceAtual];
+            document.getElementById('contador-pecas').innerText = (indiceAtual + 1) + "/" + totalTestes;
+
+            // Mostra tela de carregamento
+            const loadingMsg = document.getElementById('loading-msg');
+            loadingMsg.style.display = 'flex';
+            document.getElementById('btn-avaliar').style.display = 'none';
+
+            // Remove o modelo anterior forçando a limpeza profunda da placa de vídeo (VRAM)
+            const alvo = document.getElementById('alvo-ar');
+            let modeloAnterior = document.getElementById('modelo-peca');
+            if (modeloAnterior) {
+                limparMemoria3D(modeloAnterior);
+            }
+
+            // Cria um novo componente limpo
+            const novoModelo = document.createElement('a-entity');
+            novoModelo.setAttribute('id', 'modelo-peca');
+            novoModelo.setAttribute('rotation', '90 0 0');
+            novoModelo.setAttribute('position', '0 0 0');
+            
+            // Redefine o zoom para o valor padrão (3) a cada nova peça carregada
+            const slider = document.getElementById('zoom-slider');
+            slider.value = 3;
+            
+            const zoomAtual = document.getElementById('zoom-slider').value;
+            novoModelo.setAttribute('scale', `${zoomAtual} ${zoomAtual} ${zoomAtual}`);
+            
+            // Removendo o formato url() pois alguns navegadores mobile têm problemas com ele
+            novoModelo.setAttribute('gltf-model', `./pecas/${pecaDaVez.id}.glb`);
+            novoModelo.setAttribute('visible', 'true');
+
+            // Evento disparado quando o download e processamento do modelo 3D termina
+            novoModelo.addEventListener('model-loaded', () => {
+                loadingMsg.style.display = 'none';
+                if (alvoAR.components['mindar-image-target'] && alvoAR.components['mindar-image-target'].el.object3D.visible) {
+                    document.getElementById('btn-avaliar').style.display = 'inline-block';
+                }
+            });
+
+            novoModelo.addEventListener('model-error', () => {
+                loadingMsg.innerHTML = '<div style="color: #ff4444;">Erro ao baixar o modelo 3D. Atualize a página.</div>';
+            });
+
+            alvo.appendChild(novoModelo);
+        }
+
+        function finalizarTeste() {
+            uiContainer.style.display = "none";
+
+            let htmlLogs = "";
+            let acertos = 0;
+
+            // Oculta o modelo ao finalizar e limpa a memória profundamente
+            const modelo = document.getElementById('modelo-peca');
+            if (modelo) {
+                limparMemoria3D(modelo);
+            }
+
+            historicoRespostas.forEach(item => {
+                if (item.acertou) {
+                    acertos++;
+                    htmlLogs += `<div class="log-item">
+                        <strong>Peça ${item.etapa}:</strong> <span class="correto">✓ Acertou</span><br>
+                        Você escolheu corretamente: <em style="color: #28a745;">${item.escolha}</em>
+                    </div>`;
+                } else {
+                    htmlLogs += `<div class="log-item">
+                        <strong>Peça ${item.etapa}:</strong> <span class="incorreto">✗ Errou</span><br>
+                        Você escolheu: <em>${item.escolha}</em><br>
+                        <div class="motivo">Correto seria: <strong>${item.correta}</strong></div>
+                    </div>`;
+                }
+            });
+
+            const porcentagem = (acertos / totalTestes) * 100;
+            notaFinal.innerHTML = `Acertos: ${acertos}/${totalTestes} <br> Nota: ${porcentagem.toFixed(0)}%`;
+
+            if (acertos === totalTestes) {
+                htmlLogs = "<p style='color: #28a745; font-size: 18px; font-weight: bold;'>Parabéns! Você não cometeu nenhum erro e atingiu 100%.</p>" + htmlLogs;
+            } else {
+                htmlLogs = "<h4 style='text-align:left; width: 90%; max-width: 600px; margin-bottom: 5px;'>Resumo das inspeções:</h4>" + htmlLogs;
+            }
+
+            resultadoLogs.innerHTML = htmlLogs;
+            telaResultado.style.display = "flex";
+        }
+
+        function reiniciarTeste() {
+            indiceAtual = 0;
+            historicoRespostas = [];
+            gerarSequencia();
+            carregarPeca();
+
+            telaResultado.style.display = "none";
+            renderizarBotoes();
+        }
+
+        // Lógica de Zoom
+        const zoomSlider = document.getElementById('zoom-slider');
+        zoomSlider.addEventListener('input', (e) => {
+            const zoomVal = e.target.value;
+            const modelo = document.getElementById('modelo-peca');
+            if (modelo) {
+                modelo.setAttribute('scale', `${zoomVal} ${zoomVal} ${zoomVal}`);
+            }
+        });
+
+        // Inicialização
+        gerarSequencia();
+        renderizarBotoes();
+
+        // Garante que a primeira peça seja carregada assim que o componente estiver pronto
+        window.addEventListener('DOMContentLoaded', () => {
+            // Limpa o cache do A-Frame/Three.js para evitar vazamento de memória ao trocar modelos
+            THREE.Cache.enabled = false;
+
+            setTimeout(carregarPeca, 500);
+        });
+
+    </script>
+</body>
+
+</html>
