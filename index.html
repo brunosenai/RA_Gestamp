@@ -45,13 +45,13 @@
         }
 
         .top-bar-btns {
-            margin-right: 20px;
+            margin-right: 10px;
             display: flex;
-            gap: 10px;
+            gap: 5px;
         }
 
         .btn-top {
-            padding: 8px 15px;
+            padding: 6px 10px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -376,6 +376,25 @@
             font-weight: bold;
             margin: 10px 0;
         }
+
+        /* Ajustes para telas muito pequenas (Smartphones menores) */
+        @media (max-width: 480px) {
+            #top-bar img.logo {
+                height: 25px;
+                margin-left: 5px;
+            }
+            .top-bar-btns {
+                margin-right: 5px;
+                gap: 3px;
+            }
+            #contador-pecas {
+                font-size: 16px !important;
+            }
+            .btn-top {
+                padding: 4px 6px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 
@@ -388,12 +407,12 @@
             style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 20px; font-weight: bold; color: #333;">
             1/10</div>
         <div class="top-bar-btns">
-            <button id="btn-lanterna" class="btn-top btn-lanterna" onclick="toggleLanterna()">🔦</button>
+            <button id="btn-lanterna" class="btn-top btn-lanterna" onclick="toggleLanterna()" title="Lanterna">🔦</button>
             <button id="btn-avaliar" class="btn-top" style="background-color: #28a745; color: white; display: none;"
                 onclick="abrirModal('ui-container')">Avaliar</button>
-            <button class="btn-top" onclick="abrirModal('modal-sobre')">Sobre</button>
-            <button class="btn-top" onclick="abrirModal('modal-olho')">👁️</button>
-            <button class="btn-top" onclick="sairTreinamento()" style="background-color: #dc3545; color: white;">Sair</button>
+            <button class="btn-top" onclick="abrirModal('modal-sobre')" title="Sobre">ℹ️</button>
+            <button class="btn-top" onclick="abrirModal('modal-olho')" title="Detalhe">👁️</button>
+            <button class="btn-top" onclick="sairTreinamento()" style="background-color: #dc3545; color: white;" title="Sair">✖️</button>
         </div>
     </div>
 
