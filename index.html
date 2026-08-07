@@ -944,6 +944,11 @@
             playBeep('click');
             const lista = document.getElementById('ranking-list');
             let ranking = JSON.parse(localStorage.getItem('ra_ranking')) || [];
+            
+            // Garante que lista apenas os 10 melhores, caso a memória local tenha mais dados
+            ranking.sort((a, b) => b.pontos - a.pontos);
+            ranking = ranking.slice(0, 10);
+            
             lista.innerHTML = "";
             if(ranking.length === 0) {
                 lista.innerHTML = "<li>Nenhuma pontuação registrada.</li>";
