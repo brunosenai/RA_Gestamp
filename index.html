@@ -405,7 +405,9 @@
     <div id="tela-login">
         <h2>Bem-vindo ao Treinamento</h2>
         <p>Insira seu Nome ou Matrícula para começar:</p>
-        <input type="text" id="input-operador" placeholder="Nome do Operador" autocomplete="off">
+        <input type="text" id="input-operador" placeholder="Nome do Operador" autocomplete="off" style="margin-bottom: 5px;">
+        <p style="margin-top: 15px; margin-bottom: 5px;">Tempo por peça (segundos):</p>
+        <input type="number" id="input-tempo" value="20" min="5" max="300" style="margin-top: 5px; margin-bottom: 20px;">
         <button class="btn btn-verde" onclick="iniciarTreinamento()">Iniciar Inspeção</button>
     </div>
 
@@ -491,7 +493,7 @@
         const pontuacaoInfo = document.getElementById('pontuacao-info');
 
         // Configurações
-        const tempoLimiteSegundos = 20;
+        let tempoLimiteSegundos = 20;
         let tempoRestante = tempoLimiteSegundos;
         let timerInterval;
         let pontuacaoTotal = 0;
@@ -587,11 +589,18 @@
 
         function iniciarTreinamento() {
             const inputNome = document.getElementById('input-operador');
+            const inputTempo = document.getElementById('input-tempo');
             if(inputNome.value.trim() === "") {
                 alert("Por favor, insira seu nome para iniciar.");
                 return;
             }
             nomeOperador = inputNome.value.trim();
+            
+            const tempoEscolhido = parseInt(inputTempo.value);
+            if(tempoEscolhido >= 5 && tempoEscolhido <= 300) {
+                tempoLimiteSegundos = tempoEscolhido;
+                tempoRestante = tempoLimiteSegundos;
+            }
             playBeep('success');
             document.getElementById('tela-login').style.display = 'none';
             // Iniciar AudioContext (requer interação do usuário)
@@ -926,12 +935,32 @@
             }
         });
 
-        // Touch Rotation
+        // Touch Rotation e Double Tap para Reset
+        let lastTouchTime = 0;
+
         window.addEventListener('touchstart', (e) => {
             if(e.touches.length === 1 && document.getElementById('ui-container').style.display !== 'flex') {
-                isDragging = true;
-                previousTouchX = e.touches[0].clientX;
-                previousTouchY = e.touches[0].clientY;
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTouchTime;
+                
+                if (tapLength < 300 && tapLength > 0) {
+                    // Double tap detectado
+                    const container = document.getElementById('rotacao-container');
+                    if(container) container.setAttribute('rotation', '0 0 0');
+                    
+                    const slider = document.getElementById('zoom-slider');
+                    if(slider) slider.value = 3;
+                    
+                    const modelo = document.getElementById('modelo-peca');
+                    if(modelo) modelo.setAttribute('scale', '3 3 3');
+                    
+                    isDragging = false;
+                } else {
+                    isDragging = true;
+                    previousTouchX = e.touches[0].clientX;
+                    previousTouchY = e.touches[0].clientY;
+                }
+                lastTouchTime = currentTime;
             }
         });
 
