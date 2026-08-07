@@ -486,11 +486,13 @@
         
         <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 90%; max-width: 400px; margin-top: 10px;">
             <button class="btn btn-verde" style="padding: 10px; font-size: 15px; width: 45%;"
-                onclick="exportarRelatorio()">📥 Exportar PDF/CSV</button>
+                onclick="exportarRelatorio()">📥 Exportar CSV</button>
             <button class="btn btn-azul" style="padding: 10px; font-size: 15px; width: 45%; background-color: #17a2b8;"
                 onclick="mostrarRanking()">🏆 Ver Ranking</button>
-            <button class="btn" style="padding: 15px; font-size: 16px; width: 100%; background-color: #6c757d; margin-top: 10px;"
-                onclick="reiniciarTeste()">🔄 Reiniciar Treinamento</button>
+            <button class="btn" style="padding: 15px; font-size: 16px; width: 45%; background-color: #6c757d; margin-top: 10px;"
+                onclick="reiniciarTeste()">🔄 Reiniciar</button>
+            <button class="btn" style="padding: 15px; font-size: 16px; width: 45%; background-color: #dc3545; margin-top: 10px;"
+                onclick="sairTreinamento()">👤 Novo Operador</button>
         </div>
     </div>
 
@@ -916,14 +918,17 @@
 
         function reiniciarTeste() {
             playBeep('click');
+            pararCronometro();
             indiceAtual = 0;
             historicoRespostas = [];
             pontuacaoTotal = 0;
-            gerarSequencia();
-            carregarPeca();
 
-            telaResultado.style.display = "none";
-            renderizarBotoes();
+            document.getElementById('tela-resultado').style.display = 'none';
+            document.getElementById('ui-container').style.display = 'none';
+            document.getElementById('tela-login').style.display = 'flex';
+            
+            const modelo = document.getElementById('modelo-peca');
+            if (modelo) limparMemoria3D(modelo);
         }
 
         // --- EXPORTAÇÃO E RANKING ---
