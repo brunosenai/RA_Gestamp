@@ -393,6 +393,7 @@
                 onclick="abrirModal('ui-container')">Avaliar</button>
             <button class="btn-top" onclick="abrirModal('modal-sobre')">Sobre</button>
             <button class="btn-top" onclick="abrirModal('modal-olho')">👁️</button>
+            <button class="btn-top" onclick="sairTreinamento()" style="background-color: #dc3545; color: white;">Sair</button>
         </div>
     </div>
 
@@ -609,6 +610,23 @@
             gerarSequencia();
             renderizarBotoes();
             carregarPeca(); // Tenta carregar a primeira peça se o DOM já estiver pronto
+        }
+
+        function sairTreinamento() {
+            playBeep('click');
+            pararCronometro();
+            nomeOperador = "";
+            indiceAtual = 0;
+            historicoRespostas = [];
+            pontuacaoTotal = 0;
+            
+            document.getElementById('input-operador').value = "";
+            document.getElementById('tela-resultado').style.display = 'none';
+            document.getElementById('ui-container').style.display = 'none';
+            document.getElementById('tela-login').style.display = 'flex';
+            
+            const modelo = document.getElementById('modelo-peca');
+            if (modelo) limparMemoria3D(modelo);
         }
 
         function gerarSequencia() {
