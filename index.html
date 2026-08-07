@@ -282,6 +282,100 @@
             outline: none;
             cursor: pointer;
         }
+        /* Login e Ranking Modais */
+        #tela-login, #tela-ranking {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        #tela-login input {
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            margin: 20px 0;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        /* Timer Bar */
+        #timer-container {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background-color: #333;
+            z-index: 1900;
+            display: none;
+        }
+
+        #timer-bar {
+            width: 100%;
+            height: 100%;
+            background-color: #28a745;
+            transition: width 1s linear, background-color 0.5s;
+        }
+
+        .btn-lanterna {
+            background-color: white;
+        }
+        .btn-lanterna.ativa {
+            background-color: #ffd700; /* Dourado/Amarelo */
+            border-color: #b8860b;
+        }
+
+        /* Modal Dica (Modo Guiado) */
+        #modal-dica {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 2600;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 80%;
+            max-width: 350px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        #ranking-list {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            max-width: 400px;
+            text-align: left;
+        }
+        #ranking-list li {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #pontuacao-info {
+            font-size: 20px;
+            color: #ffd700;
+            font-weight: bold;
+            margin: 10px 0;
+        }
     </style>
 </head>
 
@@ -294,11 +388,39 @@
             style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 20px; font-weight: bold; color: #333;">
             1/10</div>
         <div class="top-bar-btns">
+            <button id="btn-lanterna" class="btn-top btn-lanterna" onclick="toggleLanterna()">🔦</button>
             <button id="btn-avaliar" class="btn-top" style="background-color: #28a745; color: white; display: none;"
                 onclick="abrirModal('ui-container')">Avaliar</button>
             <button class="btn-top" onclick="abrirModal('modal-sobre')">Sobre</button>
             <button class="btn-top" onclick="abrirModal('modal-olho')">👁️</button>
         </div>
+    </div>
+
+    <!-- Timer -->
+    <div id="timer-container">
+        <div id="timer-bar"></div>
+    </div>
+
+    <!-- Tela de Login -->
+    <div id="tela-login">
+        <h2>Bem-vindo ao Treinamento</h2>
+        <p>Insira seu Nome ou Matrícula para começar:</p>
+        <input type="text" id="input-operador" placeholder="Nome do Operador" autocomplete="off">
+        <button class="btn btn-verde" onclick="iniciarTreinamento()">Iniciar Inspeção</button>
+    </div>
+
+    <!-- Tela de Ranking -->
+    <div id="tela-ranking" style="display: none;">
+        <h2>Melhores Pontuações</h2>
+        <ul id="ranking-list"></ul>
+        <button class="btn close-modal" style="margin-top: 20px; background: #666;" onclick="fecharModal('tela-ranking')">Fechar Ranking</button>
+    </div>
+
+    <!-- Modal Dica (Erro) -->
+    <div id="modal-dica">
+        <h3 style="color: #dc3545; margin-top: 0;">Incorreto!</h3>
+        <p id="texto-dica">A peça não estava conforme.</p>
+        <button class="btn btn-azul" style="margin-top: 15px;" onclick="fecharModalDica()">Entendi</button>
     </div>
 
     <!-- Modais -->
@@ -325,11 +447,18 @@
 
     <div id="tela-resultado">
         <h2>Resultado da Inspeção</h2>
+        <div id="pontuacao-info">Pontuação: 0</div>
         <h3 id="nota-final"></h3>
-        <div id="resultado-logs"></div>
-        <button class="btn btn-azul"
-            style="margin-top: 30px; margin-bottom: 50px; padding: 15px 30px; font-size: 18px; width: auto;"
-            onclick="reiniciarTeste()">Reiniciar Treinamento</button>
+        <div id="resultado-logs" style="overflow-y: auto; max-height: 40vh; margin-bottom: 10px;"></div>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 90%; max-width: 400px; margin-top: 10px;">
+            <button class="btn btn-verde" style="padding: 10px; font-size: 15px; width: 45%;"
+                onclick="exportarRelatorio()">📥 Exportar PDF/CSV</button>
+            <button class="btn btn-azul" style="padding: 10px; font-size: 15px; width: 45%; background-color: #17a2b8;"
+                onclick="mostrarRanking()">🏆 Ver Ranking</button>
+            <button class="btn" style="padding: 15px; font-size: 16px; width: 100%; background-color: #6c757d; margin-top: 10px;"
+                onclick="reiniciarTeste()">🔄 Reiniciar Treinamento</button>
+        </div>
     </div>
 
     <a-scene mindar-image="imageTargetSrc: ./alvo_pecas.mind;" color-space="sRGB"
@@ -339,11 +468,16 @@
         <a-light type="ambient" color="#FFFFFF" intensity="1.5"></a-light>
         <a-light type="directional" color="#FFFFFF" intensity="2.0" position="1 2 1"></a-light>
 
-        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-camera position="0 0 0" look-controls="enabled: false">
+            <!-- Lanterna colada na câmera, inicialmente desligada -->
+            <a-light id="luz-lanterna" type="spot" color="#ffffff" intensity="0" position="0 0 0" rotation="0 0 0" angle="30" penumbra="0.5"></a-light>
+        </a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0" id="alvo-ar">
-            <!-- Usamos apenas uma entidade que terá seu modelo trocado dinamicamente para economizar memória (RAM/VRAM) no celular -->
-            <a-entity id="modelo-peca" rotation="90 0 0" position="0 0 0" scale="2 2 2" visible="false"></a-entity>
+            <!-- Entidade pai para o modelo, permitindo rotação via touch sem afetar a âncora do AR -->
+            <a-entity id="rotacao-container" rotation="0 0 0">
+                <a-entity id="modelo-peca" rotation="90 0 0" position="0 0 0" scale="2 2 2" visible="false"></a-entity>
+            </a-entity>
         </a-entity>
     </a-scene>
 
@@ -354,22 +488,119 @@
         const resultadoLogs = document.getElementById('resultado-logs');
         const notaFinal = document.getElementById('nota-final');
         const alvoAR = document.getElementById('alvo-ar');
+        const pontuacaoInfo = document.getElementById('pontuacao-info');
+
+        // Configurações
+        const tempoLimiteSegundos = 20;
+        let tempoRestante = tempoLimiteSegundos;
+        let timerInterval;
+        let pontuacaoTotal = 0;
+        let nomeOperador = "";
+        let lanternaAtiva = false;
+        let isCronometroRodando = false;
+        
+        // Touch Rotation variables
+        let isDragging = false;
+        let previousTouchX = 0;
+        let previousTouchY = 0;
 
         // Configuração das peças
         const pecas = [
-            { id: "p2_a", descricao: "Peça OK, peça conforme" },
-            { id: "p2_b", descricao: "Não conforme, faltando porca A" },
-            { id: "p2_c", descricao: "Não conforme, faltando porca B" },
-            { id: "p2_d", descricao: "Não conforme, faltando chapa" },
-            { id: "p2_e", descricao: "Não conforme, chapa NOK invertida" },
-            { id: "p2_f", descricao: "Não conforme, chapa NOK desalinhada" },
-            { id: "p2_g", descricao: "Não conforme, chapa NOK na posição incorreta" }
+            { id: "p2_a", descricao: "Peça OK, peça conforme", dica: "A peça está completa, com todas as porcas e chapas nos locais corretos." },
+            { id: "p2_b", descricao: "Não conforme, faltando porca A", dica: "Observe a ausência da porca de fixação na posição A (superior)." },
+            { id: "p2_c", descricao: "Não conforme, faltando porca B", dica: "A porca de fixação inferior (B) não foi soldada." },
+            { id: "p2_d", descricao: "Não conforme, faltando chapa", dica: "A chapa principal de reforço está faltando no conjunto." },
+            { id: "p2_e", descricao: "Não conforme, chapa NOK invertida", dica: "A chapa foi montada ao contrário (cabeça para baixo)." },
+            { id: "p2_f", descricao: "Não conforme, chapa NOK desalinhada", dica: "A chapa está torta em relação às guias de fixação." },
+            { id: "p2_g", descricao: "Não conforme, chapa NOK na posição incorreta", dica: "A chapa foi soldada fora da sua posição base." }
         ];
 
         let sequenciaTestes = [];
         let indiceAtual = 0;
         let historicoRespostas = [];
         const totalTestes = 10;
+
+        // --- SISTEMA DE ÁUDIO SINTÉTICO (Sem arquivos externos) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(type) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if (type === 'success') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.2);
+                if(navigator.vibrate) navigator.vibrate(50);
+            } else if (type === 'error') {
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(300, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.3);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+                if(navigator.vibrate) navigator.vibrate([50, 100, 50]);
+            } else if (type === 'click') {
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.05);
+            }
+        }
+
+        // --- FUNÇÕES BÁSICAS ---
+        function abrirModal(id) {
+            playBeep('click');
+            document.getElementById(id).style.display = 'flex';
+        }
+        function fecharModal(id) {
+            playBeep('click');
+            document.getElementById(id).style.display = 'none';
+        }
+        function fecharModalDica() {
+            fecharModal('modal-dica');
+            avancarTeste();
+        }
+
+        function toggleLanterna() {
+            playBeep('click');
+            lanternaAtiva = !lanternaAtiva;
+            const btn = document.getElementById('btn-lanterna');
+            const luz = document.getElementById('luz-lanterna');
+            if(lanternaAtiva) {
+                btn.classList.add('ativa');
+                luz.setAttribute('intensity', '3.0');
+            } else {
+                btn.classList.remove('ativa');
+                luz.setAttribute('intensity', '0');
+            }
+        }
+
+        function iniciarTreinamento() {
+            const inputNome = document.getElementById('input-operador');
+            if(inputNome.value.trim() === "") {
+                alert("Por favor, insira seu nome para iniciar.");
+                return;
+            }
+            nomeOperador = inputNome.value.trim();
+            playBeep('success');
+            document.getElementById('tela-login').style.display = 'none';
+            // Iniciar AudioContext (requer interação do usuário)
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            
+            gerarSequencia();
+            renderizarBotoes();
+            carregarPeca(); // Tenta carregar a primeira peça se o DOM já estiver pronto
+        }
 
         function gerarSequencia() {
             sequenciaTestes = [];
@@ -379,24 +610,63 @@
             }
         }
 
-        // Modais
-        function abrirModal(id) {
-            document.getElementById(id).style.display = 'flex';
+        // --- CRONÔMETRO ---
+        function iniciarCronometro() {
+            if(timerInterval) clearInterval(timerInterval);
+            const timerContainer = document.getElementById('timer-container');
+            const timerBar = document.getElementById('timer-bar');
+            
+            timerContainer.style.display = 'block';
+            const porcentagemInicial = (tempoRestante / tempoLimiteSegundos) * 100;
+            timerBar.style.width = porcentagemInicial + '%';
+            
+            if (porcentagemInicial > 60) timerBar.style.backgroundColor = '#28a745';
+
+            isCronometroRodando = true;
+
+            timerInterval = setInterval(() => {
+                tempoRestante--;
+                const porcentagem = (tempoRestante / tempoLimiteSegundos) * 100;
+                timerBar.style.width = porcentagem + '%';
+                
+                if (porcentagem <= 30) {
+                    timerBar.style.backgroundColor = '#dc3545';
+                } else if (porcentagem <= 60) {
+                    timerBar.style.backgroundColor = '#ffc107';
+                }
+
+                if (tempoRestante <= 0) {
+                    pararCronometro();
+                    processarResposta("TEMPO_ESGOTADO");
+                }
+            }, 1000);
         }
-        function fecharModal(id) {
-            document.getElementById(id).style.display = 'none';
+        function pausarCronometro() {
+            clearInterval(timerInterval);
+            isCronometroRodando = false;
+        }
+        function pararCronometro() {
+            pausarCronometro();
+            document.getElementById('timer-container').style.display = 'none';
         }
 
-        // Controle do AR
+        // --- LÓGICA AR ---
         alvoAR.addEventListener("targetFound", () => {
             if (indiceAtual < totalTestes && telaResultado.style.display !== 'flex') {
                 document.getElementById('btn-avaliar').style.display = 'inline-block';
+                
+                // Retoma o cronômetro se o modelo já estiver carregado e o jogo rolando
+                const loadingMsg = document.getElementById('loading-msg');
+                if(nomeOperador !== "" && loadingMsg.style.display === 'none' && !isCronometroRodando) {
+                    iniciarCronometro();
+                }
             }
         });
 
         alvoAR.addEventListener("targetLost", () => {
             document.getElementById('btn-avaliar').style.display = 'none';
             fecharModal('ui-container');
+            pausarCronometro();
         });
 
         function renderizarBotoes() {
@@ -409,45 +679,63 @@
         }
 
         function processarResposta(escolhaUsuario) {
+            pararCronometro();
             const pecaCorreta = sequenciaTestes[indiceAtual];
             const acertou = (escolhaUsuario === pecaCorreta.descricao);
+            
+            let pontosGanho = 0;
+            if (acertou) {
+                playBeep('success');
+                pontosGanho = Math.floor((tempoRestante / tempoLimiteSegundos) * 1000);
+                pontuacaoTotal += pontosGanho;
+            } else {
+                playBeep('error');
+            }
 
             historicoRespostas.push({
                 etapa: indiceAtual + 1,
                 correta: pecaCorreta.descricao,
                 escolha: escolhaUsuario,
-                acertou: acertou
+                acertou: acertou,
+                pontos: pontosGanho,
+                tempo: tempoLimiteSegundos - tempoRestante
             });
 
-            mostrarFeedback(() => {
-                indiceAtual++;
-                if (indiceAtual < totalTestes) {
-                    carregarPeca();
-                } else {
-                    finalizarTeste();
-                }
-            });
+            if (!acertou && escolhaUsuario !== "TEMPO_ESGOTADO") {
+                // MODO GUIADO: Mostrar erro antes de avançar
+                document.getElementById('texto-dica').innerText = `Você escolheu: ${escolhaUsuario}\nCorreto: ${pecaCorreta.descricao}\n\nDica: ${pecaCorreta.dica}`;
+                uiContainer.style.display = "none";
+                abrirModal('modal-dica');
+            } else {
+                mostrarFeedback(() => {
+                    avancarTeste();
+                });
+            }
+        }
+        
+        function avancarTeste() {
+            indiceAtual++;
+            if (indiceAtual < totalTestes) {
+                carregarPeca();
+            } else {
+                finalizarTeste();
+            }
         }
 
         function mostrarFeedback(callback) {
             uiContainer.style.display = "none";
             feedbackMsg.style.display = "flex";
 
-            // Força o reflow para a transição acontecer
             feedbackMsg.offsetHeight;
             feedbackMsg.style.opacity = "1";
 
             setTimeout(() => {
-                callback(); // Troca a peça enquanto a tela está escura
-
-                // Inicia o fade out para clarear novamente
+                callback();
                 feedbackMsg.style.opacity = "0";
-
-                // Esconde a div ao final da transição
                 setTimeout(() => {
                     feedbackMsg.style.display = "none";
                 }, 300);
-            }, 600); // Tela fica escura por 600ms
+            }, 600);
         }
 
         function limparMemoria3D(entidade) {
@@ -479,40 +767,43 @@
             const pecaDaVez = sequenciaTestes[indiceAtual];
             document.getElementById('contador-pecas').innerText = (indiceAtual + 1) + "/" + totalTestes;
 
-            // Mostra tela de carregamento
             const loadingMsg = document.getElementById('loading-msg');
             loadingMsg.style.display = 'flex';
             document.getElementById('btn-avaliar').style.display = 'none';
+            
+            pararCronometro();
+            tempoRestante = tempoLimiteSegundos;
 
-            // Remove o modelo anterior forçando a limpeza profunda da placa de vídeo (VRAM)
-            const alvo = document.getElementById('alvo-ar');
+            const rotacaoContainer = document.getElementById('rotacao-container');
             let modeloAnterior = document.getElementById('modelo-peca');
             if (modeloAnterior) {
                 limparMemoria3D(modeloAnterior);
             }
 
-            // Cria um novo componente limpo
+            // Reseta rotação touch
+            rotacaoContainer.setAttribute('rotation', '0 0 0');
+
             const novoModelo = document.createElement('a-entity');
             novoModelo.setAttribute('id', 'modelo-peca');
             novoModelo.setAttribute('rotation', '90 0 0');
             novoModelo.setAttribute('position', '0 0 0');
             
-            // Redefine o zoom para o valor padrão (3) a cada nova peça carregada
             const slider = document.getElementById('zoom-slider');
             slider.value = 3;
-            
             const zoomAtual = document.getElementById('zoom-slider').value;
             novoModelo.setAttribute('scale', `${zoomAtual} ${zoomAtual} ${zoomAtual}`);
             
-            // Removendo o formato url() pois alguns navegadores mobile têm problemas com ele
             novoModelo.setAttribute('gltf-model', `./pecas/${pecaDaVez.id}.glb`);
             novoModelo.setAttribute('visible', 'true');
 
-            // Evento disparado quando o download e processamento do modelo 3D termina
             novoModelo.addEventListener('model-loaded', () => {
                 loadingMsg.style.display = 'none';
                 if (alvoAR.components['mindar-image-target'] && alvoAR.components['mindar-image-target'].el.object3D.visible) {
                     document.getElementById('btn-avaliar').style.display = 'inline-block';
+                    // Inicia cronômetro apenas quando carregar o modelo e alvo estiver visível
+                    if(nomeOperador !== "" && !isCronometroRodando) {
+                        iniciarCronometro();
+                    }
                 }
             });
 
@@ -520,53 +811,57 @@
                 loadingMsg.innerHTML = '<div style="color: #ff4444;">Erro ao baixar o modelo 3D. Atualize a página.</div>';
             });
 
-            alvo.appendChild(novoModelo);
+            rotacaoContainer.appendChild(novoModelo);
         }
 
         function finalizarTeste() {
             uiContainer.style.display = "none";
+            pararCronometro();
 
             let htmlLogs = "";
             let acertos = 0;
 
-            // Oculta o modelo ao finalizar e limpa a memória profundamente
             const modelo = document.getElementById('modelo-peca');
-            if (modelo) {
-                limparMemoria3D(modelo);
-            }
+            if (modelo) limparMemoria3D(modelo);
 
             historicoRespostas.forEach(item => {
                 if (item.acertou) {
                     acertos++;
                     htmlLogs += `<div class="log-item">
-                        <strong>Peça ${item.etapa}:</strong> <span class="correto">✓ Acertou</span><br>
-                        Você escolheu corretamente: <em style="color: #28a745;">${item.escolha}</em>
+                        <strong>Peça ${item.etapa}:</strong> <span class="correto">✓ Acertou (+${item.pontos} pts)</span><br>
+                        Você escolheu corretamente: <em style="color: #28a745;">${item.escolha}</em> (Tempo: ${item.tempo}s)
                     </div>`;
                 } else {
                     htmlLogs += `<div class="log-item">
                         <strong>Peça ${item.etapa}:</strong> <span class="incorreto">✗ Errou</span><br>
-                        Você escolheu: <em>${item.escolha}</em><br>
+                        Você escolheu: <em>${item.escolha === 'TEMPO_ESGOTADO' ? 'Tempo Esgotado' : item.escolha}</em><br>
                         <div class="motivo">Correto seria: <strong>${item.correta}</strong></div>
                     </div>`;
                 }
             });
 
             const porcentagem = (acertos / totalTestes) * 100;
+            pontuacaoInfo.innerText = `Pontuação Final: ${pontuacaoTotal}`;
             notaFinal.innerHTML = `Acertos: ${acertos}/${totalTestes} <br> Nota: ${porcentagem.toFixed(0)}%`;
 
             if (acertos === totalTestes) {
-                htmlLogs = "<p style='color: #28a745; font-size: 18px; font-weight: bold;'>Parabéns! Você não cometeu nenhum erro e atingiu 100%.</p>" + htmlLogs;
+                htmlLogs = "<p style='color: #28a745; font-size: 18px; font-weight: bold;'>Parabéns! Inspeção Perfeita.</p>" + htmlLogs;
+                playBeep('success');
             } else {
                 htmlLogs = "<h4 style='text-align:left; width: 90%; max-width: 600px; margin-bottom: 5px;'>Resumo das inspeções:</h4>" + htmlLogs;
             }
 
             resultadoLogs.innerHTML = htmlLogs;
             telaResultado.style.display = "flex";
+            
+            salvarRanking();
         }
 
         function reiniciarTeste() {
+            playBeep('click');
             indiceAtual = 0;
             historicoRespostas = [];
+            pontuacaoTotal = 0;
             gerarSequencia();
             carregarPeca();
 
@@ -574,7 +869,54 @@
             renderizarBotoes();
         }
 
-        // Lógica de Zoom
+        // --- EXPORTAÇÃO E RANKING ---
+        function salvarRanking() {
+            let ranking = JSON.parse(localStorage.getItem('ra_ranking')) || [];
+            ranking.push({ nome: nomeOperador, pontos: pontuacaoTotal, acertos: historicoRespostas.filter(h=>h.acertou).length, data: new Date().toLocaleDateString() });
+            ranking.sort((a, b) => b.pontos - a.pontos);
+            ranking = ranking.slice(0, 10); // Mantém top 10
+            localStorage.setItem('ra_ranking', JSON.stringify(ranking));
+        }
+
+        function mostrarRanking() {
+            playBeep('click');
+            const lista = document.getElementById('ranking-list');
+            let ranking = JSON.parse(localStorage.getItem('ra_ranking')) || [];
+            lista.innerHTML = "";
+            if(ranking.length === 0) {
+                lista.innerHTML = "<li>Nenhuma pontuação registrada.</li>";
+            } else {
+                ranking.forEach((r, i) => {
+                    lista.innerHTML += `<li><span>${i+1}. ${r.nome}</span> <strong>${r.pontos} pts</strong></li>`;
+                });
+            }
+            abrirModal('tela-ranking');
+        }
+
+        function exportarRelatorio() {
+            playBeep('click');
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Operador,Data,Pontuacao Total\n";
+            csvContent += `${nomeOperador},${new Date().toLocaleDateString()},${pontuacaoTotal}\n\n`;
+            csvContent += "Etapa,Resultado,Escolha,Correta,Tempo(s),Pontos\n";
+            
+            historicoRespostas.forEach(row => {
+                let resultado = row.acertou ? "Acerto" : "Erro";
+                let escolha = row.escolha.replace(/,/g, " "); // Remove virgulas p/ nao bugar CSV
+                let correta = row.correta.replace(/,/g, " ");
+                csvContent += `${row.etapa},${resultado},${escolha},${correta},${row.tempo},${row.pontos}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Relatorio_Inspecao_${nomeOperador.replace(/\s+/g,'_')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- LÓGICA DE INTERAÇÃO ---
         const zoomSlider = document.getElementById('zoom-slider');
         zoomSlider.addEventListener('input', (e) => {
             const zoomVal = e.target.value;
@@ -584,16 +926,42 @@
             }
         });
 
-        // Inicialização
-        gerarSequencia();
-        renderizarBotoes();
+        // Touch Rotation
+        window.addEventListener('touchstart', (e) => {
+            if(e.touches.length === 1 && document.getElementById('ui-container').style.display !== 'flex') {
+                isDragging = true;
+                previousTouchX = e.touches[0].clientX;
+                previousTouchY = e.touches[0].clientY;
+            }
+        });
 
-        // Garante que a primeira peça seja carregada assim que o componente estiver pronto
+        window.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length === 1) {
+                const deltaX = e.touches[0].clientX - previousTouchX;
+                const deltaY = e.touches[0].clientY - previousTouchY;
+                
+                const container = document.getElementById('rotacao-container');
+                if(container) {
+                    let rot = container.getAttribute('rotation');
+                    // Gira em Y baseado no movimento horizontal
+                    rot.y += deltaX * 0.5;
+                    // Gira em X baseado no movimento vertical (opcional, pode ser confuso em RA)
+                    rot.x += deltaY * 0.5;
+                    container.setAttribute('rotation', rot);
+                }
+
+                previousTouchX = e.touches[0].clientX;
+                previousTouchY = e.touches[0].clientY;
+            }
+        });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // Inicialização do A-Frame
         window.addEventListener('DOMContentLoaded', () => {
-            // Limpa o cache do A-Frame/Three.js para evitar vazamento de memória ao trocar modelos
             THREE.Cache.enabled = false;
-
-            setTimeout(carregarPeca, 500);
         });
 
     </script>
