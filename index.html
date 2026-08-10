@@ -456,6 +456,12 @@
         <input type="number" id="input-tempo" value="20" min="5" max="300"
             style="margin-top: 5px; margin-bottom: 20px;">
         <button class="btn btn-verde" onclick="iniciarTreinamento()">Iniciar Inspeção</button>
+        
+        <!-- Botões para Alvo PDF -->
+        <div style="display: flex; gap: 10px; justify-content: center; width: 100%; margin-top: 20px;">
+            <a href="./pop/alvo_p1.pdf" download="alvo_p1.pdf" class="btn btn-azul" style="text-decoration: none; padding: 10px; font-size: 14px; width: 40%; max-width: 150px; text-align: center; background-color: #17a2b8; display: inline-block; box-sizing: border-box;">📥 Baixar Alvo</a>
+            <button class="btn btn-azul" style="padding: 10px; font-size: 14px; width: 40%; max-width: 150px; background-color: #6c757d; box-sizing: border-box;" onclick="imprimirAlvo()">🖨️ Imprimir Alvo</button>
+        </div>
     </div>
 
     <!-- Tela de Ranking -->
@@ -640,6 +646,18 @@
             } else {
                 btn.classList.remove('ativa');
                 luz.setAttribute('intensity', '0');
+            }
+        }
+
+        function imprimirAlvo() {
+            playBeep('click');
+            var novaJanela = window.open('./pop/alvo_p1.pdf', '_blank');
+            if (novaJanela) {
+                novaJanela.onload = function() {
+                    novaJanela.print();
+                };
+            } else {
+                alert("Por favor, permita pop-ups para imprimir o alvo.");
             }
         }
 
