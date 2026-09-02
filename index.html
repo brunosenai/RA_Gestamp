@@ -211,6 +211,48 @@
             border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
+        /* Barra Seletora Módulo CTA */
+        #cta-selector-bar {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            display: flex;
+            gap: 10px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 8px 14px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-cta-select {
+            padding: 8px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .btn-cta-select.ativo {
+            background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            transform: scale(1.05);
+        }
+
+        .btn-cta-select:active {
+            transform: scale(0.95);
+        }
+
         #top-bar img.logo {
             height: 40px;
             margin-left: 20px;
@@ -600,13 +642,25 @@
                 <button class="btn-modulo btn-modulo-treinamento">Iniciar Treinamento</button>
             </div>
 
-            <!-- Módulo 2: CTA3 -->
-            <div class="card-modulo card-cta3" onclick="selecionarModulo('CTA3')">
+            <!-- Módulo 2: CTA -->
+            <div class="card-modulo card-cta3" onclick="selecionarModulo('CTA')">
                 <span class="icone-modulo">🏛️</span>
-                <h3>CTA3 - Sala Dojo</h3>
-                <p>Visualização 3D em Realidade Aumentada do projeto da futura Sala de Treinamento Dojo (CTA3).</p>
-                <button class="btn-modulo btn-modulo-cta3">Visualizar CTA3</button>
+                <h3>Módulo CTA</h3>
+                <p>Visualização 3D em Realidade Aumentada das Salas de Treinamento (CTA 1, CTA 2 e CTA 3).</p>
+                <button class="btn-modulo btn-modulo-cta3">Visualizar CTA</button>
             </div>
+        </div>
+
+        <!-- Seção de Alvo / Marcador PDF -->
+        <div style="margin-top: 30px; display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+            <a href="./pop/alvo_p1.pdf" download="alvo_p1.pdf"
+                style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 30px; padding: 10px 22px; color: #93c5fd; text-decoration: none; font-size: 14px; font-weight: bold; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                📄 Baixar Alvo de Imagem (PDF)
+            </a>
+            <button onclick="imprimirAlvo()"
+                style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 30px; padding: 10px 22px; color: #e2e8f0; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                🖨️ Imprimir Alvo
+            </button>
         </div>
     </div>
 
@@ -616,7 +670,7 @@
         <div id="contador-pecas"
             style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 20px; font-weight: bold; color: #333; display: none;">
             1/10</div>
-        <div id="badge-modulo-cta3" class="modulo-badge" style="display: none;">CTA3 - Sala Dojo</div>
+        <div id="badge-modulo-cta" class="modulo-badge" style="display: none;">Módulo CTA</div>
         <div class="top-bar-btns">
             <button id="btn-lanterna" class="btn-top btn-lanterna" onclick="toggleLanterna()"
                 title="Lanterna">🔦</button>
@@ -624,7 +678,7 @@
                 onclick="abrirModal('ui-container')">Avaliar</button>
             <button id="btn-sobre-treinamento" class="btn-top" onclick="abrirModal('modal-sobre')" title="Sobre POP1"
                 style="display: none;">ℹ️</button>
-            <button id="btn-sobre-cta3" class="btn-top" onclick="abrirModal('modal-cta3-info')" title="Sobre CTA3 Dojo"
+            <button id="btn-sobre-cta" class="btn-top" onclick="abrirModal('modal-cta-info')" title="Sobre Módulo CTA"
                 style="display: none;">ℹ️</button>
             <button id="btn-olho" class="btn-top" onclick="abrirModal('modal-olho')" title="Detalhe POP2"
                 style="display: none;">👁️</button>
@@ -687,24 +741,30 @@
         <img src="./pop/pop2.jpg" alt="Olho POP 2">
         <button class="close-modal" onclick="fecharModal('modal-olho')">Fechar</button>
     </div>
-    <div id="modal-cta3-info" class="modal">
+    <div id="modal-cta-info" class="modal">
         <div
             style="background: white; border-radius: 12px; padding: 25px; max-width: 400px; width: 90%; color: #333; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: sans-serif;">
-            <h3 style="margin-top: 0; color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 8px;">CTA3 -
-                Sala Dojo</h3>
-            <p><strong>Projeto:</strong> Sala de Treinamento Prático Dojo CTA3</p>
-            <p><strong>Descrição:</strong> Este modelo 3D representa a estrutura física da nova sala de treinamento da
-                Gestamp. Utilize a câmera sobre o marcador para visualizar a maquete em Realidade Aumentada.</p>
+            <h3 style="margin-top: 0; color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 8px;">Módulo CTA - Salas Dojo</h3>
+            <p><strong>Projeto:</strong> Salas de Treinamento Prático Dojo CTA 1, CTA 2 e CTA 3</p>
+            <p><strong>Descrição:</strong> Escolha qual projeto deseja visualizar utilizando a barra inferior (CTA 1, CTA 2 ou CTA 3). Aponte a câmera para o marcador de RA para interagir com o modelo 3D.</p>
             <p style="margin-bottom: 5px;"><strong>Controles Interativos:</strong></p>
             <ul style="padding-left: 20px; margin-top: 5px;">
+                <li><strong>Trocar CTA:</strong> Selecione os botões CTA 1, CTA 2 ou CTA 3 na parte inferior.</li>
                 <li><strong>Girar:</strong> Arraste o dedo na tela para rotacionar o modelo em 3D.</li>
                 <li><strong>Zoom:</strong> Utilize a barra lateral deslizante à direita.</li>
                 <li><strong>Reset:</strong> Toque duas vezes na tela para resetar a visualização.</li>
             </ul>
             <button class="close-modal"
                 style="width: 100%; background: #007bff; color: white; margin-top: 15px; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;"
-                onclick="fecharModal('modal-cta3-info')">Fechar</button>
+                onclick="fecharModal('modal-cta-info')">Fechar</button>
         </div>
+    </div>
+
+    <!-- Barra Seletora Módulo CTA -->
+    <div id="cta-selector-bar" style="display: none;">
+        <button id="btn-cta-1" class="btn-cta-select ativo" onclick="trocarModeloCTA('1')">CTA 1</button>
+        <button id="btn-cta-2" class="btn-cta-select" onclick="trocarModeloCTA('2')">CTA 2</button>
+        <button id="btn-cta-3" class="btn-cta-select" onclick="trocarModeloCTA('3')">CTA 3</button>
     </div>
 
     <div id="feedback-msg">Registrando...</div>
@@ -843,6 +903,8 @@
         }
 
         // --- SISTEMA DE NAVEGAÇÃO DE MÓDULOS ---
+        let ctaAtivo = '1';
+
         function abrirSelecaoModulo() {
             playBeep('click');
             pararCronometro();
@@ -859,13 +921,14 @@
             document.getElementById('tela-ranking').style.display = 'none';
             document.getElementById('zoom-container').style.display = 'none';
             document.getElementById('loading-msg').style.display = 'none';
+            document.getElementById('cta-selector-bar').style.display = 'none';
 
             // Reset da Barra Superior
             document.getElementById('contador-pecas').style.display = 'none';
-            document.getElementById('badge-modulo-cta3').style.display = 'none';
+            document.getElementById('badge-modulo-cta').style.display = 'none';
             document.getElementById('btn-avaliar').style.display = 'none';
             document.getElementById('btn-sobre-treinamento').style.display = 'none';
-            document.getElementById('btn-sobre-cta3').style.display = 'none';
+            document.getElementById('btn-sobre-cta').style.display = 'none';
             document.getElementById('btn-olho').style.display = 'none';
             document.getElementById('btn-sair-operador').style.display = 'none';
             document.getElementById('btn-menu-principal').style.display = 'none';
@@ -885,18 +948,20 @@
                 document.getElementById('btn-sobre-treinamento').style.display = 'inline-block';
                 document.getElementById('btn-olho').style.display = 'inline-block';
                 document.getElementById('contador-pecas').style.display = 'block';
-            } else if (modulo === 'CTA3') {
-                document.getElementById('badge-modulo-cta3').style.display = 'block';
-                document.getElementById('btn-sobre-cta3').style.display = 'inline-block';
+                document.getElementById('cta-selector-bar').style.display = 'none';
+            } else if (modulo === 'CTA') {
+                document.getElementById('badge-modulo-cta').style.display = 'block';
+                document.getElementById('btn-sobre-cta').style.display = 'inline-block';
                 document.getElementById('zoom-container').style.display = 'flex';
-                carregarCTA3();
+                document.getElementById('cta-selector-bar').style.display = 'flex';
+                trocarModeloCTA('1', true);
             }
         }
 
         function configurarZoomSlider(modulo) {
             const slider = document.getElementById('zoom-slider');
             if (!slider) return;
-            if (modulo === 'CTA3') {
+            if (modulo === 'CTA') {
                 slider.min = "0.002";
                 slider.max = "0.2";
                 slider.step = "0.002";
@@ -909,14 +974,29 @@
             }
         }
 
-        function carregarCTA3() {
-            const loadingMsg = document.getElementById('loading-msg');
-            loadingMsg.style.display = 'flex';
-            const firstDiv = loadingMsg.querySelector('div:first-child');
-            const lastDiv = loadingMsg.querySelector('div:last-child');
-            if (firstDiv) firstDiv.innerText = 'Carregando Sala Dojo (CTA3)...';
-            if (lastDiv) lastDiv.innerHTML = 'Aguarde o download do modelo 3D.<br>Isso pode levar alguns segundos pelo Wi-Fi.';
+        function trocarModeloCTA(numCTA, force = false) {
+            if (numCTA === ctaAtivo && !force) return;
+            ctaAtivo = numCTA;
+            playBeep('click');
 
+            // Atualiza botões ativos
+            document.querySelectorAll('.btn-cta-select').forEach(btn => btn.classList.remove('ativo'));
+            const btnSel = document.getElementById('btn-cta-' + numCTA);
+            if (btnSel) btnSel.classList.add('ativo');
+
+            // Efeito de Fade suave para transição de modelo
+            const feedbackMsg = document.getElementById('feedback-msg');
+            feedbackMsg.innerText = `Carregando CTA ${numCTA}...`;
+            feedbackMsg.style.display = 'flex';
+            feedbackMsg.offsetHeight; // Força reflow
+            feedbackMsg.style.opacity = '1';
+
+            setTimeout(() => {
+                carregarCTA(numCTA);
+            }, 200);
+        }
+
+        function carregarCTA(numCTA) {
             const rotacaoContainer = document.getElementById('rotacao-container');
             let modeloAnterior = document.getElementById('modelo-peca');
             if (modeloAnterior) {
@@ -930,19 +1010,28 @@
             novoModelo.setAttribute('rotation', '90 0 0');
             novoModelo.setAttribute('position', '0 0 0');
 
-            configurarZoomSlider('CTA3');
+            configurarZoomSlider('CTA');
             novoModelo.setAttribute('scale', '0.025 0.025 0.025');
 
-            novoModelo.setAttribute('gltf-model', `./cta3/cta3.glb`);
+            novoModelo.setAttribute('gltf-model', `./cta${numCTA}/cta${numCTA}.glb`);
             novoModelo.setAttribute('visible', 'true');
 
             novoModelo.addEventListener('model-loaded', () => {
-                loadingMsg.style.display = 'none';
+                const feedbackMsg = document.getElementById('feedback-msg');
+                feedbackMsg.style.opacity = '0';
+                setTimeout(() => {
+                    feedbackMsg.style.display = 'none';
+                }, 300);
             });
 
             novoModelo.addEventListener('model-error', (e) => {
-                console.error("Erro ao carregar modelo CTA3:", e);
-                loadingMsg.innerHTML = '<div style="color: #ff4444;">Erro ao baixar o modelo cta3.glb. Atualize a página.</div>';
+                console.error(`Erro ao carregar modelo cta${numCTA}.glb:`, e);
+                const feedbackMsg = document.getElementById('feedback-msg');
+                feedbackMsg.innerText = `Erro ao carregar CTA ${numCTA}`;
+                setTimeout(() => {
+                    feedbackMsg.style.opacity = '0';
+                    setTimeout(() => { feedbackMsg.style.display = 'none'; }, 300);
+                }, 1500);
             });
 
             rotacaoContainer.appendChild(novoModelo);
