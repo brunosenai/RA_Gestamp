@@ -50,6 +50,167 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
+        /* Tela de Seleção de Módulo */
+        #tela-selecao-modulo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a1128 0%, #1c2541 50%, #0b132b 100%);
+            z-index: 4000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        #tela-selecao-modulo .logo-principal {
+            max-width: 180px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+        }
+
+        #tela-selecao-modulo h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            background: linear-gradient(90deg, #ffffff, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #tela-selecao-modulo p.subtitulo {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 0 0 30px 0;
+            max-width: 420px;
+        }
+
+        .grid-modulos {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: stretch;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .card-modulo {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 25px 20px;
+            flex: 1 1 280px;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-modulo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-modulo.card-treinamento::before {
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
+        .card-modulo.card-cta3::before {
+            background: linear-gradient(90deg, #3b82f6, #38bdf8);
+        }
+
+        .card-modulo:hover,
+        .card-modulo:active {
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-modulo:hover::before,
+        .card-modulo:active::before {
+            opacity: 1;
+        }
+
+        .icone-modulo {
+            font-size: 42px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .card-modulo h3 {
+            font-size: 20px;
+            margin: 0 0 10px 0;
+            color: #ffffff;
+        }
+
+        .card-modulo p {
+            font-size: 13px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin: 0 0 20px 0;
+        }
+
+        .btn-modulo {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-modulo-treinamento {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-modulo-cta3 {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Badge do Módulo na Top Bar */
+        .modulo-badge {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            background: rgba(0, 0, 0, 0.06);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
         #top-bar img.logo {
             height: 40px;
             margin-left: 20px;
@@ -423,21 +584,54 @@
 
 <body>
 
+    <!-- Tela de Seleção de Módulo -->
+    <div id="tela-selecao-modulo">
+        <img src="./pop/logo_gestamp.svg" alt="Gestamp Logo" class="logo-principal">
+        <h1>Plataforma de Realidade Aumentada</h1>
+        <p class="subtitulo">Selecione abaixo o módulo que deseja executar:</p>
+
+        <div class="grid-modulos">
+            <!-- Módulo 1: RA Treinamento -->
+            <div class="card-modulo card-treinamento" onclick="selecionarModulo('TREINAMENTO')">
+                <span class="icone-modulo">🎯</span>
+                <h3>RA Treinamento</h3>
+                <p>Inspeção prática de qualidade com 10 peças 3D interativas, controle de tempo e ranking de operadores.
+                </p>
+                <button class="btn-modulo btn-modulo-treinamento">Iniciar Treinamento</button>
+            </div>
+
+            <!-- Módulo 2: CTA3 -->
+            <div class="card-modulo card-cta3" onclick="selecionarModulo('CTA3')">
+                <span class="icone-modulo">🏛️</span>
+                <h3>CTA3 - Sala Dojo</h3>
+                <p>Visualização 3D em Realidade Aumentada do projeto da futura Sala de Treinamento Dojo (CTA3).</p>
+                <button class="btn-modulo btn-modulo-cta3">Visualizar CTA3</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Barra Superior -->
     <div id="top-bar">
         <img src="./pop/logo_gestamp.svg" alt="Gestamp Logo" class="logo">
         <div id="contador-pecas"
-            style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 20px; font-weight: bold; color: #333;">
+            style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 20px; font-weight: bold; color: #333; display: none;">
             1/10</div>
+        <div id="badge-modulo-cta3" class="modulo-badge" style="display: none;">CTA3 - Sala Dojo</div>
         <div class="top-bar-btns">
             <button id="btn-lanterna" class="btn-top btn-lanterna" onclick="toggleLanterna()"
                 title="Lanterna">🔦</button>
             <button id="btn-avaliar" class="btn-top" style="background-color: #28a745; color: white; display: none;"
                 onclick="abrirModal('ui-container')">Avaliar</button>
-            <button class="btn-top" onclick="abrirModal('modal-sobre')" title="Sobre">ℹ️</button>
-            <button class="btn-top" onclick="abrirModal('modal-olho')" title="Detalhe">👁️</button>
-            <button class="btn-top" onclick="sairTreinamento()" style="background-color: #dc3545; color: white;"
-                title="Sair">✖️</button>
+            <button id="btn-sobre-treinamento" class="btn-top" onclick="abrirModal('modal-sobre')" title="Sobre POP1"
+                style="display: none;">ℹ️</button>
+            <button id="btn-sobre-cta3" class="btn-top" onclick="abrirModal('modal-cta3-info')" title="Sobre CTA3 Dojo"
+                style="display: none;">ℹ️</button>
+            <button id="btn-olho" class="btn-top" onclick="abrirModal('modal-olho')" title="Detalhe POP2"
+                style="display: none;">👁️</button>
+            <button id="btn-menu-principal" class="btn-top" onclick="abrirSelecaoModulo()"
+                style="background-color: #007bff; color: white; display: none;" title="Menu Principal">🏠</button>
+            <button id="btn-sair-operador" class="btn-top" onclick="sairTreinamento()"
+                style="background-color: #dc3545; color: white; display: none;" title="Sair Operador">✖️</button>
         </div>
     </div>
 
@@ -447,7 +641,7 @@
     </div>
 
     <!-- Tela de Login -->
-    <div id="tela-login">
+    <div id="tela-login" style="display: none;">
         <h2>Bem-vindo ao Treinamento</h2>
         <p>Insira seu Nome ou Matrícula para começar:</p>
         <input type="text" id="input-operador" placeholder="Nome do Operador" autocomplete="off"
@@ -456,11 +650,16 @@
         <input type="number" id="input-tempo" value="20" min="5" max="300"
             style="margin-top: 5px; margin-bottom: 20px;">
         <button class="btn btn-verde" onclick="iniciarTreinamento()">Iniciar Inspeção</button>
-        
+        <button class="btn" style="background-color: #007bff; margin-top: 10px; font-size: 14px; padding: 10px; width: 90%; max-width: 400px;" onclick="abrirSelecaoModulo()">🏠 Voltar ao Menu Principal</button>
+
         <!-- Botões para Alvo PDF -->
         <div style="display: flex; gap: 10px; justify-content: center; width: 100%; margin-top: 20px;">
-            <a href="./pop/alvo_p1.pdf" download="alvo_p1.pdf" class="btn btn-azul" style="text-decoration: none; padding: 10px; font-size: 14px; width: 40%; max-width: 150px; text-align: center; background-color: #17a2b8; display: inline-block; box-sizing: border-box;">📥 Baixar Alvo</a>
-            <button class="btn btn-azul" style="padding: 10px; font-size: 14px; width: 40%; max-width: 150px; background-color: #6c757d; box-sizing: border-box;" onclick="imprimirAlvo()">🖨️ Imprimir Alvo</button>
+            <a href="./pop/alvo_p1.pdf" download="alvo_p1.pdf" class="btn btn-azul"
+                style="text-decoration: none; padding: 10px; font-size: 14px; width: 40%; max-width: 150px; text-align: center; background-color: #17a2b8; display: inline-block; box-sizing: border-box;">📥
+                Baixar Alvo</a>
+            <button class="btn btn-azul"
+                style="padding: 10px; font-size: 14px; width: 40%; max-width: 150px; background-color: #6c757d; box-sizing: border-box;"
+                onclick="imprimirAlvo()">🖨️ Imprimir Alvo</button>
         </div>
     </div>
 
@@ -487,6 +686,25 @@
     <div id="modal-olho" class="modal">
         <img src="./pop/pop2.jpg" alt="Olho POP 2">
         <button class="close-modal" onclick="fecharModal('modal-olho')">Fechar</button>
+    </div>
+    <div id="modal-cta3-info" class="modal">
+        <div
+            style="background: white; border-radius: 12px; padding: 25px; max-width: 400px; width: 90%; color: #333; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: sans-serif;">
+            <h3 style="margin-top: 0; color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 8px;">CTA3 -
+                Sala Dojo</h3>
+            <p><strong>Projeto:</strong> Sala de Treinamento Prático Dojo CTA3</p>
+            <p><strong>Descrição:</strong> Este modelo 3D representa a estrutura física da nova sala de treinamento da
+                Gestamp. Utilize a câmera sobre o marcador para visualizar a maquete em Realidade Aumentada.</p>
+            <p style="margin-bottom: 5px;"><strong>Controles Interativos:</strong></p>
+            <ul style="padding-left: 20px; margin-top: 5px;">
+                <li><strong>Girar:</strong> Arraste o dedo na tela para rotacionar o modelo em 3D.</li>
+                <li><strong>Zoom:</strong> Utilize a barra lateral deslizante à direita.</li>
+                <li><strong>Reset:</strong> Toque duas vezes na tela para resetar a visualização.</li>
+            </ul>
+            <button class="close-modal"
+                style="width: 100%; background: #007bff; color: white; margin-top: 15px; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;"
+                onclick="fecharModal('modal-cta3-info')">Fechar</button>
+        </div>
     </div>
 
     <div id="feedback-msg">Registrando...</div>
@@ -554,7 +772,10 @@
         const alvoAR = document.getElementById('alvo-ar');
         const pontuacaoInfo = document.getElementById('pontuacao-info');
 
-        // Configurações
+        // Estado Global da Aplicação
+        let modoAtivo = 'MENU'; // 'MENU', 'TREINAMENTO', 'CTA3'
+
+        // Configurações do Treinamento
         let tempoLimiteSegundos = 20;
         let tempoRestante = tempoLimiteSegundos;
         let timerInterval;
@@ -568,7 +789,7 @@
         let previousTouchX = 0;
         let previousTouchY = 0;
 
-        // Configuração das peças
+        // Configuração das peças do Treinamento
         const pecas = [
             { id: "p2_a", descricao: "Peça OK, peça conforme", dica: "A peça está completa, com todas as porcas e chapas nos locais corretos." },
             { id: "p2_b", descricao: "Não conforme, faltando porca A", dica: "Observe a ausência da porca de fixação na posição A (superior)." },
@@ -621,6 +842,112 @@
             }
         }
 
+        // --- SISTEMA DE NAVEGAÇÃO DE MÓDULOS ---
+        function abrirSelecaoModulo() {
+            playBeep('click');
+            pararCronometro();
+            modoAtivo = 'MENU';
+            nomeOperador = "";
+            indiceAtual = 0;
+            historicoRespostas = [];
+            pontuacaoTotal = 0;
+
+            document.getElementById('tela-selecao-modulo').style.display = 'flex';
+            document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('tela-resultado').style.display = 'none';
+            document.getElementById('ui-container').style.display = 'none';
+            document.getElementById('tela-ranking').style.display = 'none';
+            document.getElementById('zoom-container').style.display = 'none';
+            document.getElementById('loading-msg').style.display = 'none';
+
+            // Reset da Barra Superior
+            document.getElementById('contador-pecas').style.display = 'none';
+            document.getElementById('badge-modulo-cta3').style.display = 'none';
+            document.getElementById('btn-avaliar').style.display = 'none';
+            document.getElementById('btn-sobre-treinamento').style.display = 'none';
+            document.getElementById('btn-sobre-cta3').style.display = 'none';
+            document.getElementById('btn-olho').style.display = 'none';
+            document.getElementById('btn-sair-operador').style.display = 'none';
+            document.getElementById('btn-menu-principal').style.display = 'none';
+
+            const modelo = document.getElementById('modelo-peca');
+            if (modelo) limparMemoria3D(modelo);
+        }
+
+        function selecionarModulo(modulo) {
+            playBeep('click');
+            modoAtivo = modulo;
+            document.getElementById('tela-selecao-modulo').style.display = 'none';
+            document.getElementById('btn-menu-principal').style.display = 'inline-block';
+
+            if (modulo === 'TREINAMENTO') {
+                document.getElementById('tela-login').style.display = 'flex';
+                document.getElementById('btn-sobre-treinamento').style.display = 'inline-block';
+                document.getElementById('btn-olho').style.display = 'inline-block';
+                document.getElementById('contador-pecas').style.display = 'block';
+            } else if (modulo === 'CTA3') {
+                document.getElementById('badge-modulo-cta3').style.display = 'block';
+                document.getElementById('btn-sobre-cta3').style.display = 'inline-block';
+                document.getElementById('zoom-container').style.display = 'flex';
+                carregarCTA3();
+            }
+        }
+
+        function configurarZoomSlider(modulo) {
+            const slider = document.getElementById('zoom-slider');
+            if (!slider) return;
+            if (modulo === 'CTA3') {
+                slider.min = "0.002";
+                slider.max = "0.2";
+                slider.step = "0.002";
+                slider.value = "0.025";
+            } else {
+                slider.min = "0.5";
+                slider.max = "10";
+                slider.step = "0.2";
+                slider.value = "3";
+            }
+        }
+
+        function carregarCTA3() {
+            const loadingMsg = document.getElementById('loading-msg');
+            loadingMsg.style.display = 'flex';
+            const firstDiv = loadingMsg.querySelector('div:first-child');
+            const lastDiv = loadingMsg.querySelector('div:last-child');
+            if (firstDiv) firstDiv.innerText = 'Carregando Sala Dojo (CTA3)...';
+            if (lastDiv) lastDiv.innerHTML = 'Aguarde o download do modelo 3D.<br>Isso pode levar alguns segundos pelo Wi-Fi.';
+
+            const rotacaoContainer = document.getElementById('rotacao-container');
+            let modeloAnterior = document.getElementById('modelo-peca');
+            if (modeloAnterior) {
+                limparMemoria3D(modeloAnterior);
+            }
+
+            rotacaoContainer.setAttribute('rotation', '0 0 0');
+
+            const novoModelo = document.createElement('a-entity');
+            novoModelo.setAttribute('id', 'modelo-peca');
+            novoModelo.setAttribute('rotation', '90 0 0');
+            novoModelo.setAttribute('position', '0 0 0');
+
+            configurarZoomSlider('CTA3');
+            novoModelo.setAttribute('scale', '0.025 0.025 0.025');
+
+            novoModelo.setAttribute('gltf-model', `./cta3/cta3.glb`);
+            novoModelo.setAttribute('visible', 'true');
+
+            novoModelo.addEventListener('model-loaded', () => {
+                loadingMsg.style.display = 'none';
+            });
+
+            novoModelo.addEventListener('model-error', (e) => {
+                console.error("Erro ao carregar modelo CTA3:", e);
+                loadingMsg.innerHTML = '<div style="color: #ff4444;">Erro ao baixar o modelo cta3.glb. Atualize a página.</div>';
+            });
+
+            rotacaoContainer.appendChild(novoModelo);
+        }
+
         // --- FUNÇÕES BÁSICAS ---
         function abrirModal(id) {
             playBeep('click');
@@ -653,7 +980,7 @@
             playBeep('click');
             var novaJanela = window.open('./pop/alvo_p1.pdf', '_blank');
             if (novaJanela) {
-                novaJanela.onload = function() {
+                novaJanela.onload = function () {
                     novaJanela.print();
                 };
             } else {
@@ -677,12 +1004,15 @@
             }
             playBeep('success');
             document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('btn-sair-operador').style.display = 'inline-block';
+            document.getElementById('zoom-container').style.display = 'flex';
+
             // Iniciar AudioContext (requer interação do usuário)
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
             gerarSequencia();
             renderizarBotoes();
-            carregarPeca(); // Tenta carregar a primeira peça se o DOM já estiver pronto
+            carregarPeca();
         }
 
         function sairTreinamento() {
@@ -697,6 +1027,8 @@
             document.getElementById('tela-resultado').style.display = 'none';
             document.getElementById('ui-container').style.display = 'none';
             document.getElementById('tela-login').style.display = 'flex';
+            document.getElementById('btn-sair-operador').style.display = 'none';
+            document.getElementById('zoom-container').style.display = 'none';
 
             const modelo = document.getElementById('modelo-peca');
             if (modelo) limparMemoria3D(modelo);
@@ -752,21 +1084,25 @@
 
         // --- LÓGICA AR ---
         alvoAR.addEventListener("targetFound", () => {
-            if (indiceAtual < totalTestes && telaResultado.style.display !== 'flex') {
-                document.getElementById('btn-avaliar').style.display = 'inline-block';
+            if (modoAtivo === 'TREINAMENTO') {
+                if (indiceAtual < totalTestes && telaResultado.style.display !== 'flex') {
+                    document.getElementById('btn-avaliar').style.display = 'inline-block';
 
-                // Retoma o cronômetro se o modelo já estiver carregado e o jogo rolando
-                const loadingMsg = document.getElementById('loading-msg');
-                if (nomeOperador !== "" && loadingMsg.style.display === 'none' && !isCronometroRodando) {
-                    iniciarCronometro();
+                    // Retoma o cronômetro se o modelo já estiver carregado e o jogo rolando
+                    const loadingMsg = document.getElementById('loading-msg');
+                    if (nomeOperador !== "" && loadingMsg.style.display === 'none' && !isCronometroRodando) {
+                        iniciarCronometro();
+                    }
                 }
             }
         });
 
         alvoAR.addEventListener("targetLost", () => {
-            document.getElementById('btn-avaliar').style.display = 'none';
-            fecharModal('ui-container');
-            pausarCronometro();
+            if (modoAtivo === 'TREINAMENTO') {
+                document.getElementById('btn-avaliar').style.display = 'none';
+                fecharModal('ui-container');
+                pausarCronometro();
+            }
         });
 
         function renderizarBotoes() {
@@ -869,6 +1205,10 @@
 
             const loadingMsg = document.getElementById('loading-msg');
             loadingMsg.style.display = 'flex';
+            const firstDiv = loadingMsg.querySelector('div:first-child');
+            const lastDiv = loadingMsg.querySelector('div:last-child');
+            if (firstDiv) firstDiv.innerText = 'Carregando Peça 3D...';
+            if (lastDiv) lastDiv.innerHTML = 'Isso pode levar alguns segundos pelo Wi-Fi,<br>pois os modelos possuem alta resolução.';
             document.getElementById('btn-avaliar').style.display = 'none';
 
             pararCronometro();
@@ -888,8 +1228,7 @@
             novoModelo.setAttribute('rotation', '90 0 0');
             novoModelo.setAttribute('position', '0 0 0');
 
-            const slider = document.getElementById('zoom-slider');
-            slider.value = 3;
+            configurarZoomSlider('TREINAMENTO');
             const zoomAtual = document.getElementById('zoom-slider').value;
             novoModelo.setAttribute('scale', `${zoomAtual} ${zoomAtual} ${zoomAtual}`);
 
@@ -1047,11 +1386,10 @@
                     const container = document.getElementById('rotacao-container');
                     if (container) container.setAttribute('rotation', '0 0 0');
 
-                    const slider = document.getElementById('zoom-slider');
-                    if (slider) slider.value = 3;
-
+                    configurarZoomSlider(modoAtivo);
+                    const defaultScale = modoAtivo === 'CTA3' ? 0.025 : 3;
                     const modelo = document.getElementById('modelo-peca');
-                    if (modelo) modelo.setAttribute('scale', '3 3 3');
+                    if (modelo) modelo.setAttribute('scale', `${defaultScale} ${defaultScale} ${defaultScale}`);
 
                     isDragging = false;
                 } else {
@@ -1090,6 +1428,7 @@
         // Inicialização do A-Frame
         window.addEventListener('DOMContentLoaded', () => {
             THREE.Cache.enabled = false;
+            abrirSelecaoModulo();
         });
 
     </script>
